@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <title><: $title :></title>
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+</head>
+<body>
+
+<section id="title">
+  <h1><: $title :></h1>
+</section>
+
+<nav id="return_index"><a href="index.html">戻る</a></nav>
+
+: for $calendars -> $c {
+<: $c | mark_raw :>
+: }
+
+<: $footer | mark_raw :>
+</body>
+</html>

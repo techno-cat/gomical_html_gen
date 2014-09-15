@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <title><: $title :></title>
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+</head>
+<body>
+
+<section id="title">
+  <h1><: $title :></h1>
+  <p><a href="../gomical/">iCalデータ</a>からHTMLに変換しました</p>
+</section>
+
+<nav id="index">
+: for $html_tree -> $node {
+  <h2><: $node.ward :></h2>
+  <ul>
+  : for $node.children -> $c {
+  <li><a href="<: $c.href :>"><: $c.street :></a></li>
+  : }
+  </ul>
+: }
+</nav>
+
+<: $footer | mark_raw :>
+</body>
+</html>

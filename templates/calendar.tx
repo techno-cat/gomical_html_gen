@@ -1,0 +1,23 @@
+<section class="cls_calendar">
+<h2><: $year :>&nbsp;年&nbsp;<: $month :>&nbsp;月</h2>
+<table>
+  <tr>
+    <th class="cls_sun">日<div>Sun</div></th>
+    <th class="cls_mon">月<div>Mon</div></th>
+    <th class="cls_tue">火<div>Tue</div></th>
+    <th class="cls_wed">水<div>Wed</div></th>
+    <th class="cls_thu">木<div>Thu</div></th>
+    <th class="cls_fri">金<div>Fri</div></th>
+    <th class="cls_sat">土<div>Sat</div></th>
+  </tr>
+  : for $schedule -> $weekly {
+  <tr>
+    : for $weekly -> $s {
+    <td class="<: $s.style :>">
+        <section><h6><: $s.day :></h6><p><: $s.text :></p></secion>
+    </td>
+    : }
+  </tr>
+  : }
+</table>
+</section>
