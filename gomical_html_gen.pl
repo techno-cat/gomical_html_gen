@@ -272,7 +272,7 @@ gomical_html_gen.pl - gomical HTML generator
 
     iCalデータとJSONから、HTMLを出力するスクリプト
 
-    000〜xxx.htmlとindex.htmlは、import.plによって出力される
+    000〜xxx.htmlとindex.htmlは、gomical_html_gen.plによって出力される
     .
     ├── gomical_html
     │   ├── 000.html
