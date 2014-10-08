@@ -5,7 +5,6 @@ use warnings;
 use JSON;
 use Encode qw(encode);
 use Path::Tiny;
-use Data::ICal;
 use Time::Piece;
 use Text::Xslate qw(mark_raw);
 use FindBin qw($Bin);
@@ -38,15 +37,12 @@ if ( (not @ARGV) or (not -e $ARGV[0]) ) {
     exit( 0 );
 }
 
-open( my $fh, '<', $ARGV[0] ) or die;
-my $unicode_json_text = do { local $/; <$fh>; };
-my $json = from_json( $unicode_json_text, { utf8  => 1 } );
-
+my $area_json = load_json( $ARGV[0] );
 my $json_dir = path( $ARGV[0] )->parent();
 #say 'dir : ', $json_dir;
 
 # todo: 札幌市の公式ページに合わせた並びにする
-my @wards = sort( keys %{$json} );
+my @wards = sort( keys %{$area_json} );
 #print encode('UTF-8', $_), "\n" for @wards;
 #say "--------------------------";
 
@@ -67,7 +63,7 @@ foreach my $ward ( @wards ) {
     #say encode( 'UTF-8', $ward );
 
     # todo: 住所用のソート
-    my @streets = sort( keys %{$json->{$ward}} );
+    my @streets = sort( keys %{$area_json->{$ward}} );
 
     my @children = ();
     foreach my $street ( @streets ) {
@@ -112,9 +108,8 @@ foreach my $node ( @html_tree ) {
         my ( $ward, $street, $dst_path ) = ( $_->{ward}, $_->{street}, $_->{dst_path} );
         say encode('UTF-8', '  ' . $ward . ':' . $street), ':', $dst_path;
 
-        my $path = path( $json_dir, $json->{$ward}->{$street} );
-        my $ical = Data::ICal->new( filename => $path ) or die;
-        my $src = create_calendar_src( $ward, $street, parse_ical_data($ical) );
+        my $path = path( $json_dir, $area_json->{$ward}->{$street} );
+        my $src = create_calendar_src( $ward, $street, parse_json_file($path) );
 
         my @calendars = map {
             $xslate->render( "calendar.tx", {
@@ -229,33 +224,42 @@ sub calc_days_of {
     return $t->month_last_day();
 }
 
-sub parse_ical_data {
-    my $ical = shift;
+sub parse_json_file {
+    my $path = shift;
+    my $json = load_json( $path );
 
     my %result = ();
-    foreach my $entry ( @{$ical->{entries}} ) {
-        my $date = $entry->{properties}->{dtstart}[0]->{value};
-        my $summary = $entry->{properties}->{summary}[0]->{value};
-        my @tmp = $date =~ /(\d{4})(\d{2})(\d{2})/;
-        my ( $yyyy, $MM, $dd ) = map { int($_) } @tmp;
+    foreach my $summary ( keys %{$json->{data}} ) {
+        foreach my $date ( @{$json->{data}->{$summary}} ) {
+            my @tmp = $date =~ /(\d{4})-(\d{2})-(\d{2})/;
+            my ( $yyyy, $MM, $dd ) = map { int($_) } @tmp;
 
-        if ( not exists $result{$yyyy} ) {
-            $result{$yyyy} = {};
+            if ( not exists $result{$yyyy} ) {
+                $result{$yyyy} = {};
+            }
+
+            if ( not exists $result{$yyyy}->{$MM} ) {
+                $result{$yyyy}->{$MM} = [];
+            }
+
+            push @{$result{$yyyy}->{$MM}}, +{
+                yyyy => $yyyy,
+                MM => $MM,
+                dd => $dd,
+                summary => encode('UTF-8', $summary)
+            };
         }
-
-        if ( not exists $result{$yyyy}->{$MM} ) {
-            $result{$yyyy}->{$MM} = [];
-        }
-
-        push @{$result{$yyyy}->{$MM}}, +{
-            yyyy => $yyyy,
-            MM => $MM,
-            dd => $dd,
-            summary => $summary
-        };
     }
 
     return \%result;
+}
+
+sub load_json {
+    my $path = shift;
+
+    open( my $fh, '<', $path ) or die;
+    my $unicode_json_text = do { local $/; <$fh>; };
+    return from_json( $unicode_json_text, { utf8  => 1 } );
 }
 
 =encoding utf-8
@@ -266,7 +270,7 @@ gomical_html_gen.pl - gomical HTML generator
 
 =head1 SYNOPSIS
 
-    $ perl gomical_html_gen.pl path/to/area.json
+    $ perl gomical_html_gen.pl gomical/json.2013/北海道/札幌市/area.json
 
 =head1 DESCRIPTION
 
@@ -274,6 +278,8 @@ gomical_html_gen.pl - gomical HTML generator
 
     000〜xxx.htmlとindex.htmlは、gomical_html_gen.plによって出力される
     .
+    ├── README.md
+    ├── gomical <--- サブモジュール
     ├── gomical_html
     │   ├── 000.html
     │   ├── 001.html
