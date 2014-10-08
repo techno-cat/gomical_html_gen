@@ -6,12 +6,14 @@ gomical_html_gen
 
     $ perl gomical_html_gen.pl gomical/json/北海道/札幌市/area.json
 
+# Sample
+
+実行結果はこんな感じ  
+http://hokkaidopm.github.io/hokkaidopm-casual/gomical_html/
+
 # DESCRIPTION
 
     gomicalリポジトリのJSONから、HTML版のゴミ収集カレンダーを出力するスクリプト
-
-    実行結果はこんな感じ  
-    [http://hokkaidopm.github.io/hokkaidopm-casual/gomical_html/](http://hokkaidopm.github.io/hokkaidopm-casual/gomical_html/)
 
     000〜xxx.htmlとindex.htmlは、gomical_html_gen.plによって出力される
     .
