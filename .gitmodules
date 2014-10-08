@@ -1,0 +1,3 @@
+[submodule "gomical"]
+	path = gomical
+	url = https://github.com/syachi/gomical
