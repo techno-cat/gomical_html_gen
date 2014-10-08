@@ -270,11 +270,11 @@ gomical_html_gen.pl - gomical HTML generator
 
 =head1 SYNOPSIS
 
-    $ perl gomical_html_gen.pl gomical/json.2013/北海道/札幌市/area.json
+    $ perl gomical_html_gen.pl gomical/json/北海道/札幌市/area.json
 
 =head1 DESCRIPTION
 
-    iCalデータとJSONから、HTMLを出力するスクリプト
+    gomicalリポジトリのJSONから、HTML版のゴミ収集カレンダーを出力するスクリプト
 
     000〜xxx.htmlとindex.htmlは、gomical_html_gen.plによって出力される
     .
@@ -299,6 +299,10 @@ gomical_html_gen.pl - gomical HTML generator
         ├── footer.tx
         ├── index.tx
         └── nnn.tx
+
+=head1 DEPENDENCIES
+
+ Text::Xslate
 
 =head1 LICENSE
 
